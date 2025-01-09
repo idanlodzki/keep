@@ -24,6 +24,7 @@ import { PiDiamondsFourFill } from "react-icons/pi";
 import { HiBellAlert } from "react-icons/hi2";
 import { useRouter } from "next/navigation";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, SparklesIcon } from "lucide-react";
 
 interface Pagination {
   limit: number;
@@ -118,9 +119,11 @@ export function getTriggerIcon(triggered_by: string) {
     case "Manual":
       return CursorArrowRaysIcon;
     case "Scheduler":
-      return PiDiamondsFourFill;
+      return ClockIcon;
     case "Alert":
       return HiBellAlert;
+    case "Incident AI":
+      return SparklesIcon;
     case "Incident":
       return HiBellAlert;
     default:

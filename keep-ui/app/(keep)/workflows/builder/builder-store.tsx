@@ -259,6 +259,10 @@ function addNodeBetween(
       set({ v2Properties: { ...get().v2Properties, [newNodeId]: {} } });
       break;
     }
+    case "incident_ai": {
+      set({ v2Properties: { ...get().v2Properties, [newNodeId]: {} } });
+      break;
+    }
     case "incident": {
       set({ v2Properties: { ...get().v2Properties, [newNodeId]: {} } });
       break;
@@ -475,7 +479,7 @@ const useStore = create<FlowState>((set, get) => ({
         !(idArray.includes(edge.source) || idArray.includes(edge.target))
     );
     if (
-      ["interval", "alert", "manual", "incident"].includes(ids) &&
+      ["interval", "alert", "manual", "incident_ai", "incident"].includes(ids) &&
       edges.some(
         (edge) => edge.source === "trigger_start" && edge.target !== ids
       )
@@ -515,7 +519,7 @@ const useStore = create<FlowState>((set, get) => ({
       newNode,
       ...nodes.slice(endIndex + 2),
     ];
-    if (["manual", "alert", "interval", "incident"].includes(ids)) {
+    if (["manual", "alert", "interval", "incident_ai", "incident"].includes(ids)) {
       const v2Properties = get().v2Properties;
       delete v2Properties[ids];
       set({ v2Properties });

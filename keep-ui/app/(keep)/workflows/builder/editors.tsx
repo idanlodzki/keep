@@ -391,7 +391,7 @@ function WorkflowEditorV2({
     <>
       <Title className="mt-2.5">Workflow Settings</Title>
       {propertyKeys.map((key, index) => {
-        const isTrigger = ["manual", "alert", "interval", "incident"].includes(
+        const isTrigger = ["manual", "alert", "interval", "incident_ai", "incident"].includes(
           key
         );
 
@@ -532,6 +532,12 @@ function WorkflowEditorV2({
                         onChange={(e: any) => handleChange(key, e.target.value)}
                         value={properties[key] || ("" as string)}
                       />
+                    )
+                  );
+                case "incident_ai":
+                  return (
+                    selectedNode === "incident_ai" && (
+                      <div>This trigger will automatically run the workflow if AI will decide so based on the incident name, description and the workflow content.</div>
                     )
                   );
                 case "disabled":

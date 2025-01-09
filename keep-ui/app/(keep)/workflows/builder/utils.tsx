@@ -72,6 +72,15 @@ export function getToolboxConfiguration(providers: Provider[]) {
             },
           },
           {
+            type: "incident_ai",
+            componentType: "trigger",
+            name: "Incident AI",
+            id: "incident_ai",
+            properties: {
+              manual: "true",
+            },
+          },
+          {
             type: "incident",
             componentType: "trigger",
             name: "Incident",

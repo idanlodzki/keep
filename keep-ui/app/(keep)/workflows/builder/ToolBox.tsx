@@ -5,10 +5,9 @@ import { IoChevronUp, IoClose } from "react-icons/io5";
 import Image from "next/image";
 import { IoIosArrowDown } from "react-icons/io";
 import useStore from "./builder-store";
-import { PiDiamondsFourFill } from "react-icons/pi";
 import clsx from "clsx";
 import { V2Step } from "@/app/(keep)/workflows/builder/types";
-import { CursorArrowRaysIcon } from "@heroicons/react/24/outline";
+import { ClockIcon, CursorArrowRaysIcon, SparklesIcon } from "@heroicons/react/24/outline";
 
 const GroupedMenu = ({
   name,
@@ -56,8 +55,10 @@ const GroupedMenu = ({
     switch (type) {
       case "manual":
         return <CursorArrowRaysIcon className="size-8" />;
+      case "incident_ai":
+        return <SparklesIcon className="size-8" />;
       case "interval":
-        return <PiDiamondsFourFill size={32} />;
+        return <ClockIcon className="size-8" />;
     }
   }
 
@@ -110,7 +111,7 @@ const GroupedMenu = ({
                     >
                       {getTriggerIcon(step)}
                       {!!step &&
-                        !["interval", "manual"].includes(step.type) && (
+                        !["interval", "manual", "incident_ai"].includes(step.type) && (
                           <Image
                             src={IconUrlProvider(step) || "/keep.png"}
                             alt={step?.type}
@@ -147,7 +148,7 @@ const DragAndDropSidebar = ({ isDraggable }: { isDraggable?: boolean }) => {
 
   const triggerNodeMap = nodes
     .filter((node: any) =>
-      ["interval", "manual", "alert", "incident"].includes(node?.id)
+      ["interval", "manual", "alert", "incident_ai", "incident"].includes(node?.id)
     )
     .reduce(
       (obj: any, node: any) => {

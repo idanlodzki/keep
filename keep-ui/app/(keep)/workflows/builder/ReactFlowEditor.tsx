@@ -45,7 +45,7 @@ const ReactFlowEditor = ({
   const [isOpen, setIsOpen] = useState(false);
   const stepEditorRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const isTrigger = ["interval", "manual", "alert", "incident"].includes(
+  const isTrigger = ["interval", "manual", "alert", "incident_ai", "incident"].includes(
     selectedNode || ""
   );
   const saveRef = useRef<boolean>(false);
