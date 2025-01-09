@@ -121,6 +121,7 @@ function Builder({
 
   const updateWorkflow = () => {
     const body = stringify(buildAlert(definition.value));
+    console.log("updateWorkflow body", body);
     api
       .request(`/workflows/${workflowId}`, {
         method: "PUT",

@@ -537,7 +537,9 @@ function WorkflowEditorV2({
                 case "incident_ai":
                   return (
                     selectedNode === "incident_ai" && (
-                      <div>This trigger will automatically run the workflow if AI will decide so based on the incident name, description and the workflow content.</div>
+                      <div>
+                         will automatically run the workflow if AI decides to do so based on the incident name, description, and workflow content.
+                      </div>
                     )
                   );
                 case "disabled":

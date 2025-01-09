@@ -77,7 +77,6 @@ export function getToolboxConfiguration(providers: Provider[]) {
             name: "Incident AI",
             id: "incident_ai",
             properties: {
-              manual: "true",
             },
           },
           {
@@ -323,6 +322,7 @@ export function parseWorkflow(
     workflow.triggers?.reduce((prev: any, curr: any) => {
       const currType = curr.type;
       let value = curr.value;
+      console.log("curr.value", curr.value)
       if (currType === "alert") {
         if (curr.filters) {
           value = curr.filters.reduce((prev: any, curr: any) => {
@@ -336,6 +336,8 @@ export function parseWorkflow(
         value = "true";
       } else if (currType === "incident") {
         value = { events: curr.events };
+      } else if (currType === "incident_ai") {
+        value = {};
       }
       prev[currType] = value;
       return prev;
@@ -540,6 +542,13 @@ export function buildAlert(definition: Definition): Alert {
     triggers.push({
       type: "incident",
       events: alert.properties.incident.events,
+    });
+  }
+  console.log("alert.properties.incident_ai", alert.properties.incident_ai)
+  console.log(alert.properties)
+  if (alert.properties.incident_ai) {
+    triggers.push({
+      type: "incident_ai",
     });
   }
   return {
