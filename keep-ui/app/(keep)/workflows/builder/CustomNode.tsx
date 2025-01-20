@@ -11,6 +11,7 @@ import { BiSolidError } from "react-icons/bi";
 import { toast } from "react-toastify";
 import { FlowNode } from "@/app/(keep)/workflows/builder/types";
 import { CursorArrowRaysIcon } from "@heroicons/react/24/outline";
+import { DynamicImageProviderIcon } from "@/components/ui";
 import { ClockIcon, SparklesIcon } from "lucide-react";
 
 function IconUrlProvider(data: FlowNode["data"]) {
@@ -120,7 +121,7 @@ function CustomNode({ id, data }: FlowNode) {
             <div className="container p-2 flex-1 flex flex-row items-center justify-between gap-2 flex-wrap">
               {getTriggerIcon(data)}
               {!!data && !["interval", "manual", "incident_ai"].includes(data.type) && (
-                <Image
+                <DynamicImageProviderIcon
                   src={IconUrlProvider(data) || "/keep.png"}
                   alt={data?.type}
                   className="object-cover w-8 h-8 rounded-full bg-gray-100"

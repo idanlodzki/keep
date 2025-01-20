@@ -131,7 +131,27 @@ export type FlowState = {
   setSynced: (synced: boolean) => void;
   canDeploy: boolean;
   setCanDeploy: (deploy: boolean) => void;
+  reset: () => void;
 };
+
+export type FlowStateValues = Pick<
+  FlowState,
+  | "nodes"
+  | "edges"
+  | "selectedNode"
+  | "v2Properties"
+  | "openGlobalEditor"
+  | "stepEditorOpenForNode"
+  | "toolboxConfiguration"
+  | "isLayouted"
+  | "selectedEdge"
+  | "changes"
+  | "firstInitilisationDone"
+  | "lastSavedChanges"
+  | "errorNode"
+  | "synced"
+  | "canDeploy"
+>;
 
 export type StoreGet = () => FlowState;
 export type StoreSet = (
@@ -270,7 +290,7 @@ function addNodeBetween(
   }
 }
 
-const useStore = create<FlowState>((set, get) => ({
+const defaultState: FlowStateValues = {
   nodes: [],
   edges: [],
   selectedNode: null,
@@ -286,6 +306,10 @@ const useStore = create<FlowState>((set, get) => ({
   errorNode: null,
   synced: true,
   canDeploy: false,
+};
+
+const useStore = create<FlowState>((set, get) => ({
+  ...defaultState,
   setCanDeploy: (deploy) => set({ canDeploy: deploy }),
   setSynced: (sync) => set({ synced: sync }),
   setErrorNode: (id) => set({ errorNode: id }),
@@ -557,6 +581,7 @@ const useStore = create<FlowState>((set, get) => ({
     };
     set({ nodes: [...get().nodes, newNode] });
   },
+  reset: () => set(defaultState),
 }));
 
 export default useStore;

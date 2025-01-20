@@ -5,8 +5,8 @@ import {
 } from "@tanstack/react-table";
 import {
   PaginatedWorkflowExecutionDto,
-  WorkflowExecution,
-} from "../builder/types";
+  WorkflowExecutionDetail,
+} from "@/shared/api/workflow-executions";
 import { GenericTable } from "@/components/table/GenericTable";
 import Link from "next/link";
 import { Dispatch, Fragment, SetStateAction } from "react";
@@ -35,7 +35,7 @@ interface Props {
   setPagination: Dispatch<SetStateAction<Pagination>>;
 }
 
-function ExecutionRowMenu({ row }: { row: Row<WorkflowExecution> }) {
+function ExecutionRowMenu({ row }: { row: Row<WorkflowExecutionDetail> }) {
   const stopPropagation = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
   };
@@ -183,7 +183,7 @@ export function extractTriggerDetails(
 }
 
 export function ExecutionTable({ executions, setPagination }: Props) {
-  const columnHelper = createColumnHelper<WorkflowExecution>();
+  const columnHelper = createColumnHelper<WorkflowExecutionDetail>();
   const router = useRouter();
 
   const columns = [
@@ -292,11 +292,11 @@ export function ExecutionTable({ executions, setPagination }: Props) {
       header: "",
       cell: ({ row }) => <ExecutionRowMenu row={row} />,
     }),
-  ] as DisplayColumnDef<WorkflowExecution>[];
+  ] as DisplayColumnDef<WorkflowExecutionDetail>[];
 
   //To DO pagiantion limit and offest can also be added to url searchparams
   return (
-    <GenericTable<WorkflowExecution>
+    <GenericTable<WorkflowExecutionDetail>
       data={executions.items}
       columns={columns}
       rowCount={executions.count ?? 0} // Assuming pagination is not needed, you can adjust this if you have pagination
@@ -305,7 +305,7 @@ export function ExecutionTable({ executions, setPagination }: Props) {
       onPaginationChange={(newLimit: number, newOffset: number) =>
         setPagination({ limit: newLimit, offset: newOffset })
       }
-      onRowClick={(row: WorkflowExecution) => {
+      onRowClick={(row: WorkflowExecutionDetail) => {
         router.push(`/workflows/${row.workflow_id}/runs/${row.id}`);
       }}
     />
