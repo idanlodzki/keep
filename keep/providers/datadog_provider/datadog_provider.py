@@ -8,11 +8,12 @@ import json
 import logging
 import os
 import time
-from collections import defaultdict
+from collections import defaultdict, Counter
 from typing import Literal
 
 import pydantic
 import requests
+
 from datadog_api_client import ApiClient, Configuration
 from datadog_api_client.api_client import Endpoint
 from datadog_api_client.exceptions import (
@@ -36,7 +37,7 @@ from datadog_api_client.v2.api.users_api import UsersApi, UsersResponse
 from keep.api.models.alert import AlertDto, AlertSeverity, AlertStatus
 from keep.api.models.db.topology import TopologyServiceInDto
 from keep.contextmanager.contextmanager import ContextManager
-from keep.providers.base.base_provider import BaseTopologyProvider
+from keep.providers.base.base_provider import BaseTopologyProvider, ProviderHealthMixin
 from keep.providers.base.provider_exceptions import GetAlertException
 from keep.providers.datadog_provider.datadog_alert_format_description import (
     DatadogAlertFormatDescription,
@@ -105,7 +106,7 @@ class DatadogProviderAuthConfig:
     )
 
 
-class DatadogProvider(BaseTopologyProvider):
+class DatadogProvider(BaseTopologyProvider, ProviderHealthMixin):
     """Pull/push alerts from Datadog."""
 
     PROVIDER_CATEGORY = ["Monitoring"]
@@ -1329,11 +1330,14 @@ if __name__ == "__main__":
     # Load environment variables
     import os
 
-    api_key = os.environ.get("DATADOG_API_KEY")
-    app_key = os.environ.get("DATADOG_APP_KEY")
+    # api_key = os.environ.get("DATADOG_API_KEY", "dec674d405f5c63d575e7a4e8ca17411")
+    # app_key = os.environ.get("DATADOG_APP_KEY", "699e6669ec8b585d09d1dd7dfbcc1c3168c6c9ff")
+    api_key = os.environ.get("DATADOG_API_KEY", "2ade07834d55408cfac2e746b5713682")
+    app_key = os.environ.get("DATADOG_APP_KEY", "be8f3784f5df149d01681882082ec3675884e0ad")
+    # domain = os.environ.get("DATADOG_DOMAIN", "https://api.datadoghq.eu")
 
     provider_config = {
-        "authentication": {"api_key": api_key, "app_key": app_key},
+        "authentication": {"api_key": api_key, "app_key": app_key}, # , "domain": domain
     }
     provider: DatadogProvider = ProvidersFactory.get_provider(
         context_manager=context_manager,
@@ -1344,4 +1348,10 @@ if __name__ == "__main__":
     result = provider.create_incident(
         "tal test from provider", "what will I tell you?", "Tal Borenstein"
     )
+    print(result)
+    # result = provider.get_alerts_configuration()
+    # result = provider.provider_type()
+    # result = provider.get_alerts()
+    # print([r.service for r in result])
+    result = provider.get_health_report()
     print(result)
