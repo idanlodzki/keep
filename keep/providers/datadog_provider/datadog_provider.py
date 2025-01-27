@@ -8,7 +8,7 @@ import json
 import logging
 import os
 import time
-from collections import defaultdict, Counter
+from collections import defaultdict
 from typing import Literal
 
 import pydantic
@@ -1330,14 +1330,11 @@ if __name__ == "__main__":
     # Load environment variables
     import os
 
-    # api_key = os.environ.get("DATADOG_API_KEY", "dec674d405f5c63d575e7a4e8ca17411")
-    # app_key = os.environ.get("DATADOG_APP_KEY", "699e6669ec8b585d09d1dd7dfbcc1c3168c6c9ff")
-    api_key = os.environ.get("DATADOG_API_KEY", "2ade07834d55408cfac2e746b5713682")
-    app_key = os.environ.get("DATADOG_APP_KEY", "be8f3784f5df149d01681882082ec3675884e0ad")
-    # domain = os.environ.get("DATADOG_DOMAIN", "https://api.datadoghq.eu")
+    api_key = os.environ.get("DATADOG_API_KEY")
+    app_key = os.environ.get("DATADOG_APP_KEY")
 
     provider_config = {
-        "authentication": {"api_key": api_key, "app_key": app_key}, # , "domain": domain
+        "authentication": {"api_key": api_key, "app_key": app_key},
     }
     provider: DatadogProvider = ProvidersFactory.get_provider(
         context_manager=context_manager,
@@ -1348,10 +1345,4 @@ if __name__ == "__main__":
     result = provider.create_incident(
         "tal test from provider", "what will I tell you?", "Tal Borenstein"
     )
-    print(result)
-    # result = provider.get_alerts_configuration()
-    # result = provider.provider_type()
-    # result = provider.get_alerts()
-    # print([r.service for r in result])
-    result = provider.get_health_report()
     print(result)

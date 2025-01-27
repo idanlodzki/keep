@@ -113,7 +113,7 @@ class ProvidersService:
             raise HTTPException(status_code=400, detail=str(e))
 
         if validate_scopes:
-            validated_scopes = ProvidersService.validate_scopes(provider)
+            ProvidersService.validate_scopes(provider)
         else:
             pass
 
