@@ -194,7 +194,7 @@ class ArgocdProvider(BaseTopologyProvider):
                 extra={"exception": str(e)},
             )
 
-    def pull_topology(self):
+    def pull_topology(self) -> tuple[list[TopologyServiceInDto], dict]:
         applications = self.__pull_applications()
         service_topology = {}
         for application in applications:
@@ -234,4 +234,4 @@ class ArgocdProvider(BaseTopologyProvider):
                         node["uid"]
                     ] = "unknown"
 
-        return list(service_topology.values())
+        return list(service_topology.values()), {}
