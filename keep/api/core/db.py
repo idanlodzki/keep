@@ -806,32 +806,42 @@ def push_logs_to_db(log_entries):
     # avoid circular import
     from keep.api.logging import LOG_FORMAT, LOG_FORMAT_OPEN_TELEMETRY
 
+    db_log_entries = []
     if LOG_FORMAT == LOG_FORMAT_OPEN_TELEMETRY:
-        db_log_entries = [
-            WorkflowExecutionLog(
-                workflow_execution_id=log_entry["workflow_execution_id"],
-                timestamp=datetime.strptime(
-                    log_entry["asctime"], "%Y-%m-%d %H:%M:%S,%f"
-                ),
-                message=log_entry["message"][0:255],  # limit the message to 255 chars
-                context=json.loads(
-                    json.dumps(log_entry.get("context", {}), default=str)
-                ),  # workaround to serialize any object
-            )
-            for log_entry in log_entries
-        ]
+        for log_entry in log_entries:
+            try:
+                WorkflowExecutionLog(
+                    workflow_execution_id=log_entry["workflow_execution_id"],
+                    timestamp=datetime.strptime(
+                        log_entry["asctime"], "%Y-%m-%d %H:%M:%S,%f"
+                    ),
+                    message=log_entry["message"][
+                        0:255
+                    ],  # limit the message to 255 chars
+                    context=json.loads(
+                        json.dumps(log_entry.get("context", {}), default=str)
+                    ),  # workaround to serialize any object
+                )
+                db_log_entries.append(log_entry)
+            except Exception:
+                print("Failed to parse log entry - ", log_entry)
+
     else:
-        db_log_entries = [
-            WorkflowExecutionLog(
-                workflow_execution_id=log_entry["workflow_execution_id"],
-                timestamp=log_entry["created"],
-                message=log_entry["message"][0:255],  # limit the message to 255 chars
-                context=json.loads(
-                    json.dumps(log_entry.get("context", {}), default=str)
-                ),  # workaround to serialize any object
-            )
-            for log_entry in log_entries
-        ]
+        for log_entry in log_entries:
+            try:
+                log_entry = WorkflowExecutionLog(
+                    workflow_execution_id=log_entry["workflow_execution_id"],
+                    timestamp=log_entry["created"],
+                    message=log_entry["message"][
+                        0:255
+                    ],  # limit the message to 255 chars
+                    context=json.loads(
+                        json.dumps(log_entry.get("context", {}), default=str)
+                    ),  # workaround to serialize any object
+                )
+                db_log_entries.append(log_entry)
+            except Exception:
+                print("Failed to parse log entry - ", log_entry)
 
     # Add the LogEntry instances to the database session
     with Session(engine) as session:
@@ -2224,19 +2234,27 @@ def get_all_deduplication_stats(tenant_id):
     return stats
 
 
-def get_last_alert_hash_by_fingerprint(tenant_id, fingerprint) -> str | None:
-    # get the last alert for a given fingerprint
+def get_last_alert_hashes_by_fingerprints(
+    tenant_id, fingerprints: list[str]
+) -> dict[str, str | None]:
+    # get the last alert hashes for a list of fingerprints
     # to check deduplication
     with Session(engine) as session:
         query = (
-            select(LastAlert.alert_hash)
+            select(LastAlert.fingerprint, LastAlert.alert_hash)
             .where(LastAlert.tenant_id == tenant_id)
-            .where(LastAlert.fingerprint == fingerprint)
-            .limit(1)
+            .where(LastAlert.fingerprint.in_(fingerprints))
         )
 
-        alert_hash: str | None = session.scalars(query).first()
-    return alert_hash
+        results = session.execute(query).all()
+
+    # Create a dictionary from the results
+    alert_hash_dict = {
+        fingerprint: alert_hash
+        for fingerprint, alert_hash in results
+        if alert_hash is not None
+    }
+    return alert_hash_dict
 
 
 def update_key_last_used(
@@ -3314,7 +3332,7 @@ def get_last_incidents(
     with_alerts: bool = False,
     is_predicted: bool = None,
     filters: Optional[dict] = None,
-    allowed_incident_ids: Optional[List[str]] = None
+    allowed_incident_ids: Optional[List[str]] = None,
 ) -> Tuple[list[Incident], int]:
     """
     Get the last incidents and total amount of incidents.
@@ -3380,6 +3398,7 @@ def get_last_incidents(
         enrich_incidents_with_enrichments(tenant_id, incidents, session)
 
     return incidents, total_count
+
 
 def get_incident_by_id(
     tenant_id: str,
